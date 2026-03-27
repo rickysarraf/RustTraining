@@ -59,10 +59,12 @@ jobs:
             echo "Already up to date with upstream."
           fi
 
-      - name: Create sync branch
+      - name: Create sync branch and open PR
         if: steps.diff.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          BRANCH="upstream-sync/$(date +%Y-%m-%d)"
+          BRANCH="upstream-sync/$(date +%Y-%m-%d)-${{ github.run_number }}"
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git checkout -b "$BRANCH"
@@ -71,25 +73,15 @@ jobs:
             git add -A
             git commit -m "chore: merge upstream changes (conflicts need resolution)"
           }
-          echo "SYNC_BRANCH=$BRANCH" >> "$GITHUB_ENV"
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore: sync with upstream (${{ steps.diff.outputs.behind }} new commit(s))" \
+            --body "This PR was automatically created by the **Weekly Upstream Sync** workflow.
 
-      - name: Push sync branch
-        if: steps.diff.outputs.has_changes == 'true'
-        run: git push origin "$SYNC_BRANCH"
+**Upstream:** \`${{ steps.upstream.outputs.url }}\`
+**New commits:** ${{ steps.diff.outputs.behind }}
 
-      - name: Create Pull Request
-        if: steps.diff.outputs.has_changes == 'true'
-        uses: peter-evans/create-pull-request@v7
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ env.SYNC_BRANCH }}
-          base: main
-          title: "chore: sync with upstream (${{ steps.diff.outputs.behind }} new commit(s))"
-          body: |
-            This PR was automatically created by the **Weekly Upstream Sync** workflow.
-
-            **Upstream:** `${{ steps.upstream.outputs.url }}`
-            **New commits:** ${{ steps.diff.outputs.behind }}
-
-            Please review the changes and resolve any conflicts before merging.
-          labels: upstream-sync
+Please review the changes and resolve any conflicts before merging." \
+            --label upstream-sync
