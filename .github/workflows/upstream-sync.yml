@@ -1,8 +1,8 @@
-name: Weekly Upstream Sync
+name: Monthly Upstream Sync
 
 on:
   schedule:
-    - cron: '0 6 * * 1'  # Every Monday at 06:00 UTC
+    - cron: '0 6 1 * *'  # First day of every month at 06:00 UTC
   workflow_dispatch:
     inputs:
       upstream_url:
@@ -78,7 +78,7 @@ jobs:
             --base main \
             --head "$BRANCH" \
             --title "chore: sync with upstream (${{ steps.diff.outputs.behind }} new commit(s))" \
-            --body "This PR was automatically created by the **Weekly Upstream Sync** workflow.
+            --body "This PR was automatically created by the **Monthly Upstream Sync** workflow.
 
 **Upstream:** \`${{ steps.upstream.outputs.url }}\`
 **New commits:** ${{ steps.diff.outputs.behind }}
