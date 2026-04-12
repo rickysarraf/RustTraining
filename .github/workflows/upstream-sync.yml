@@ -1,0 +1,87 @@
+name: Monthly Upstream Sync
+
+on:
+  schedule:
+    - cron: '0 6 1 * *'  # First day of every month at 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      upstream_url:
+        description: 'Upstream repository URL (overrides UPSTREAM_REPO variable)'
+        required: false
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine upstream URL
+        id: upstream
+        run: |
+          URL="${{ inputs.upstream_url }}"
+          if [ -z "$URL" ]; then
+            URL="${{ vars.UPSTREAM_REPO }}"
+          fi
+          if [ -z "$URL" ]; then
+            echo "No upstream URL configured. Set the UPSTREAM_REPO repository variable or pass upstream_url as workflow input."
+            exit 1
+          fi
+          echo "url=$URL" >> "$GITHUB_OUTPUT"
+
+      - name: Add upstream remote and fetch
+        run: |
+          git remote add upstream "${{ steps.upstream.outputs.url }}"
+          git fetch upstream --no-tags
+
+      - name: Check for new upstream commits
+        id: diff
+        run: |
+          UPSTREAM_BRANCH=$(git remote show upstream | awk '/HEAD branch/ {print $NF}')
+          echo "upstream_branch=$UPSTREAM_BRANCH" >> "$GITHUB_OUTPUT"
+
+          BEHIND=$(git rev-list --count HEAD..upstream/"$UPSTREAM_BRANCH" 2>/dev/null || echo 0)
+          echo "behind=$BEHIND" >> "$GITHUB_OUTPUT"
+
+          if [ "$BEHIND" -gt 0 ]; then
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+            echo "Upstream is ahead by $BEHIND commit(s)."
+          else
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+            echo "Already up to date with upstream."
+          fi
+
+      - name: Create sync branch and open PR
+        if: steps.diff.outputs.has_changes == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          BRANCH="upstream-sync/$(date +%Y-%m-%d)-${{ github.run_number }}"
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b "$BRANCH"
+          git merge --no-edit upstream/${{ steps.diff.outputs.upstream_branch }} || {
+            echo "Merge produced conflicts. Committing conflict markers for review."
+            git add -A
+            git commit -m "chore: merge upstream changes (conflicts need resolution)"
+          }
+          git push origin "$BRANCH"
+          gh pr create \
+            --base main \
+            --head "$BRANCH" \
+            --title "chore: sync with upstream (${{ steps.diff.outputs.behind }} new commit(s))" \
+            --body "This PR was automatically created by the **Monthly Upstream Sync** workflow.
+
+**Upstream:** \`${{ steps.upstream.outputs.url }}\`
+**New commits:** ${{ steps.diff.outputs.behind }}
+
+Please review the changes and resolve any conflicts before merging." \
+            --label upstream-sync
