@@ -1,4 +1,4 @@
-# Chapter 8 — Functional vs. Imperative: When Elegance Wins (and When It Doesn't)
+# 8. Functional vs. Imperative: When Elegance Wins (and When It Doesn't)
 
 > **Difficulty:** 🟡 Intermediate | **Time:** 2–3 hours | **Prerequisites:** [Ch 7 — Closures](ch07-closures-and-higher-order-functions.md)
 
@@ -300,14 +300,14 @@ No functional equivalent is cleaner. The loop with `match state` is the natural 
 flowchart TB
     START{What are you doing?}
 
-    START -->|"Transforming a collection\ninto another collection"| PIPE[Use iterator chain]
-    START -->|"Computing a single value\nfrom a collection"| AGG{How complex?}
-    START -->|"Multiple outputs from\none pass"| LOOP[Use a for loop]
-    START -->|"State machine with\nI/O or side effects"| LOOP
-    START -->|"One Option/Result\ntransform + default"| COMB[Use combinators]
+    START -->|"Transforming a collection<br/>into another collection"| PIPE[Use iterator chain]
+    START -->|"Computing a single value<br/>from a collection"| AGG{How complex?}
+    START -->|"Multiple outputs from<br/>one pass"| LOOP[Use a for loop]
+    START -->|"State machine with<br/>I/O or side effects"| LOOP
+    START -->|"One Option/Result<br/>transform + default"| COMB[Use combinators]
 
-    AGG -->|"Sum, count, min, max"| BUILTIN["Use .sum(), .count(),\n.min(), .max()"]
-    AGG -->|"Custom accumulation"| FOLD{Accumulator has mutation\nor side effects?}
+    AGG -->|"Sum, count, min, max"| BUILTIN["Use .sum(), .count(),<br/>.min(), .max()"]
+    AGG -->|"Custom accumulation"| FOLD{Accumulator has mutation<br/>or side effects?}
     FOLD -->|"No"| FOLDF["Use .fold()"]
     FOLD -->|"Yes"| LOOP
 
@@ -351,7 +351,7 @@ let samples: Vec<f64> = std::iter::from_fn(|| Some(random()))
 ```
 
 But `take_while` *excludes* the element that fails the predicate, producing anywhere from
-zero to nine elements instead of the guaranteed-at-least-one the imperative version provides. You can work around it with `scan` or `chain`, but the imperative version
+zero to ten elements instead of the guaranteed-at-least-one the imperative version provides. You can work around it with `scan` or `chain`, but the imperative version
 is clearer.
 
 **When scoped mutability genuinely wins:**

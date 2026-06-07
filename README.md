@@ -29,6 +29,7 @@ This material combines original content with ideas and examples inspired by some
 - [**Niko Matsakis**](https://smallcultfollowing.com/babysteps/) — language design, borrow checker internals, Polonius
 - [**Rust by Example**](https://doc.rust-lang.org/rust-by-example/) and [**Rustonomicon**](https://doc.rust-lang.org/nomicon/) — practical patterns and unsafe deep-dives
 - [**This Week in Rust**](https://this-week-in-rust.org/) — community discoveries that shaped many examples
+- [**Binary Musings - Tag(Rust)**](https://binarymusings.org/posts/category/rust/) — Deep dive into Rust internals 
 - …and many others in the **Rust community at large** whose blog posts, conference talks, RFCs, and forum discussions have informed this material — too numerous to list individually, but deeply appreciated
 
 ## 📖 Start Reading
@@ -45,25 +46,24 @@ Pick the book that matches your background. Books are grouped by complexity so y
 
 | Book | Level | Who it's for |
 |------|-------|-------------|
-| [**Rust for C/C++ Programmers**](c-cpp-book/src/SUMMARY.md) | 🟢 Bridge | Move semantics, RAII, FFI, embedded, no_std |
-| [**Rust for C# Programmers**](csharp-book/src/SUMMARY.md) | 🟢 Bridge | Swift / C# / Java → ownership & type system |
-| [**Rust for Python Programmers**](python-book/src/SUMMARY.md) | 🟢 Bridge | Dynamic → static typing, GIL-free concurrency |
-| [**Async Rust**](async-book/src/SUMMARY.md) | 🔵 Deep Dive | Tokio, streams, cancellation safety |
-| [**Rust Patterns**](rust-patterns-book/src/SUMMARY.md) | 🟡 Advanced | Pin, allocators, lock-free structures, unsafe |
-| [**Type-Driven Correctness**](type-driven-correctness-book/src/SUMMARY.md) | 🟣 Expert | Type-state, phantom types, capability tokens |
-| [**Rust Engineering Practices**](engineering-book/src/SUMMARY.md) | 🟤 Practices | Build scripts, cross-compilation, CI/CD, Miri |
+| [**Rust for C/C++ Programmers**](https://microsoft.github.io/RustTraining/c-cpp-book/) | 🟢 Bridge | Move semantics, RAII, FFI, embedded, no_std |
+| [**Rust for C# Programmers**](https://microsoft.github.io/RustTraining/csharp-book/) | 🟢 Bridge | Swift / C# / Java → ownership & type system |
+| [**Rust for Python Programmers**](https://microsoft.github.io/RustTraining/python-book/) | 🟢 Bridge | Dynamic → static typing, GIL-free concurrency |
+| [**Async Rust**](https://microsoft.github.io/RustTraining/async-book/) | 🔵 Deep Dive | Tokio, streams, cancellation safety |
+| [**Rust Patterns**](https://microsoft.github.io/RustTraining/rust-patterns-book/) | 🟡 Advanced | Pin, allocators, lock-free structures, unsafe |
+| [**Type-Driven Correctness**](https://microsoft.github.io/RustTraining/type-driven-correctness-book/) | 🟣 Expert | Type-state, phantom types, capability tokens |
+| [**Rust Engineering Practices**](https://microsoft.github.io/RustTraining/engineering-book/) | 🟤 Practices | Build scripts, cross-compilation, CI/CD, Miri |
 
 Each book has 15–16 chapters with Mermaid diagrams, editable Rust playgrounds, exercises, and full-text search.
 
-> **Tip:** You can read the markdown source directly on GitHub, or browse the rendered site with sidebar navigation and search at the [GitHub Pages site](https://microsoft.github.io/RustTraining/).
+> **Tip:** Browse the rendered books with sidebar navigation and search at the [GitHub Pages site](https://microsoft.github.io/RustTraining/).
 >
-> **Local serving:** For the best reading experience (keyboard navigation between chapters, instant search, offline access), clone the repo and run:
+> **Local preview:** For offline reading or while contributing ([install Rust](https://rustup.rs/) first):
 > ```
-> # Install Rust via rustup if you don't have it yet:
-> # https://rustup.rs/
->
-> cargo install mdbook@0.4.52 mdbook-mermaid@0.14.0
-> cargo xtask serve          # builds all books and opens a local server
+> git clone https://github.com/microsoft/RustTraining.git
+> cd RustTraining
+> cargo install mdbook mdbook-mermaid
+> cargo xtask serve    # http://localhost:3000
 > ```
 
 ---
@@ -79,6 +79,13 @@ Install [Rust via **rustup**](https://rustup.rs/) if you haven't already, then:
 
 ```bash
 cargo install mdbook@0.4.52 mdbook-mermaid@0.14.0
+```
+
+### Clone the repo
+
+```bash
+git clone https://github.com/microsoft/RustTraining.git
+cd RustTraining
 ```
 
 ### Build & serve
@@ -98,6 +105,7 @@ cd c-cpp-book && mdbook serve --open    # http://localhost:3000
 
 ### Deployment
 
-The site auto-deploys to GitHub Pages on push to `master` via `.github/workflows/pages.yml`. No manual steps needed.
+The site auto-deploys to GitHub Pages on push to `main` via `.github/workflows/pages.yml`. No manual steps needed.
 
 </details>
+

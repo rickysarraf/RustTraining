@@ -1021,6 +1021,11 @@ Instead of collapsing everything into `has_critical_events: bool`, classify each
 parsed SEL event into a per-subsystem health bucket:
 
 ```rust,ignore
+/// Worst-of health value — Ord gives us `.max()` for free.
+/// (Full definition in ch18; reproduced here for the SEL pipeline.)
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+pub enum HealthValue { OK, Warning, Critical }
+
 /// Health contribution from a single SEL event, classified by subsystem.
 #[derive(Debug, Clone)]
 pub enum SubsystemHealth {
@@ -1261,12 +1266,12 @@ bytes to Redfish-ready health values:
 
 ```mermaid
 flowchart LR
-    RAW["Raw [u8; 16]\nSEL entries"]
-    PARSE["TryFrom:\nValidSelRecord\n(enum tree)"]
-    CLASSIFY["classify_event_health\n(exhaustive match)"]
-    LINEARIZE["SDR linearize\nraw → Celsius/Rpm/Watts"]
-    SUMMARY["TypedSelSummary\n(per-subsystem health\n+ dimensional readings)"]
-    REDFISH["ch18: health rollup\n→ Status.Health JSON"]
+    RAW["Raw [u8; 16]<br/>SEL entries"]
+    PARSE["TryFrom:<br/>ValidSelRecord<br/>(enum tree)"]
+    CLASSIFY["classify_event_health<br/>(exhaustive match)"]
+    LINEARIZE["SDR linearize<br/>raw → Celsius/Rpm/Watts"]
+    SUMMARY["TypedSelSummary<br/>(per-subsystem health<br/>+ dimensional readings)"]
+    REDFISH["ch18: health rollup<br/>→ Status.Health JSON"]
 
     RAW -->|"ch07 §Parse"| PARSE
     PARSE -->|"typed events"| CLASSIFY
